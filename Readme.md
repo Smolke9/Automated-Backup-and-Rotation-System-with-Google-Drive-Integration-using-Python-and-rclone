@@ -15,6 +15,10 @@ This project automates backing up local directories by compressing them into tim
 - Detailed logging of all operations
 - Cron-triggered automation; virtualenv-aware runner script
 
+## Architecture Diagram
+  ![](./screenshot/diagram.png)
+
+
 ## Project Structure
 ```
 backup_project/
@@ -24,7 +28,9 @@ backup_project/
 ├── backup_script.py       # Main Python backup script
 ├── run_backup.sh          # Shell wrapper for cron
 └── .backup_config.env     # Environment/configuration file (example name)
+
 ```
+ ![](./screenshot/1.jpg)
 
 ## Requirements
 - Python 3.8+
@@ -33,7 +39,7 @@ backup_project/
 - `zip` / `unzip` utilities (Linux: `sudo apt install zip unzip -y`)
 - `curl` (for webhook testing)
 - `cron` (for scheduled runs)
-
+ ![](./screenshot/2.jpg)
 ## Quick Setup
 1. Create and activate a virtual environment:
 ```bash
@@ -41,7 +47,10 @@ python3 -m venv venv
 source venv/bin/activate
 pip install python-dotenv
 ```
-
+ ![](./screenshot/3.jpg)
+  ![](./screenshot/4.jpg) 
+  ![](./screenshot/5.jpg)
+  
 2. Install `rclone` and configure your Google Drive remote named `gdrive-backup`:
 ```bash
 curl https://rclone.org/install.sh | sudo bash
@@ -84,8 +93,9 @@ LOG_FILE=/home/ubuntu/backup_project/logs/backup.log
 # Optional: extra rclone flags (e.g. --drive-chunk-size 64M)
 RCLONE_FLAGS=--progress
 ```
-
+ 
 > Save this as `~/.backup_config.env` or in `backup_project/.backup_config.env` (update `run_backup.sh` accordingly).
+![](./screenshot/backupconfig.png)
 
 ## Suggested `backup_script.py` (summary)
 - Load environment via `dotenv`
@@ -99,6 +109,29 @@ RCLONE_FLAGS=--progress
 
 > **Tip:** Use `subprocess.run([...], check=True)` for `rclone` calls and capture output for logs.
 
+## Write the python Backup Script:
+We created the script:
+nano ~/backup_project/backup_script.py
+-This script does the following:
+-• Loads variables from the .env file
+-• Creates a .zip file of the source directory
+-• Stores it in the backup folder with a timestamp
+-• Uploads the zip to Google Drive using rclone
+-• Sends a webhook notification (optional)
+-• Logs each operation
+-• Deletes old backups based on retention policy
+-We made it executable:
+-chmod +x ~/backup_project/backup_script.py 
+
+## Test the Script:
+We tested the script manually
+ ![](./screenshot/6.jpg)
+
+ ## New zip file created inside backups/YYYY/MM/DD/
+ ![](./screenshot/8.jpg)
+
+## Uploaded on Google Drive Zip file
+![](./screenshot/7.jpg)
 ### Example webhook payloads
 ```json
 # Success
@@ -139,7 +172,7 @@ For production, schedule daily at 02:00 AM:
 ```
 0 2 * * * /home/ubuntu/backup_project/run_backup.sh >> /home/ubuntu/backup_project/cron_output.log 2>&1
 ```
-
+![](./screenshot/9.jpg)
 ## Retention Policy (concept)
 - **Daily**: keep last `RETENTION_DAYS_DAILY` days
 - **Weekly**: keep one backup per week for `RETENTION_DAYS_WEEKLY` days
@@ -156,7 +189,7 @@ Implementation approach:
 source venv/bin/activate
 python3 backup_script.py
 ```
-
+ ![](./screenshot/6.jpg)
 2. Verify:
 - A zip file appears in `backups/`
 - `rclone` uploads the file to Google Drive
@@ -252,5 +285,5 @@ def main():
 if __name__ == '__main__':
     main()
 ```
-
+# Read Project 4.pdf
 
