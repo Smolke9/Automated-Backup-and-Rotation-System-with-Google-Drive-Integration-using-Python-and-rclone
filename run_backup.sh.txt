@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Activate virtual environment
+source /home/ubuntu/backup_project/venv/bin/activate
+
+# Run the Python backup script
+python /home/ubuntu/backup_project/backup_script.py
